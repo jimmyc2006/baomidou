@@ -22,10 +22,11 @@ public class InsertTest {
   @Test
   public void insert() {
     User user = new User();
-    user.setName("向北");
+    user.setName("向前");
     user.setAge(26);
     user.setManagerId(1088248166370832385L);
     user.setCreateTime(LocalDateTime.now());
+    user.setRemark("remamamam");
     System.out.println(user);
     this.userMapper.insert(user);
     System.out.print(user);
