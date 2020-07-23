@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -97,4 +98,62 @@ public class SelectTest {
     List<User> userList = userMapper.selectList(queryWrapper);
     userList.forEach(System.out::println);
   }
+
+  // 实体类中非null作为参数
+  @Test
+  public void select7() {
+    User whereUser = new User();
+    whereUser.setName("刘红雨");
+    whereUser.setAge(32);
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>(whereUser);
+    queryWrapper.like("email", "lh");
+    List<User> userList = userMapper.selectList(queryWrapper);
+    userList.forEach(System.out::println);
+  }
+
+  // 查询结果为Map,应用场景是表字段多，但是只需要少数几个字段
+  @Test
+  public void select8Map() {
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("id", "name").like("email", "l");
+    List<Map<String, Object>> maps = userMapper.selectMaps(queryWrapper);
+    maps.forEach(System.out::println);
+  }
+
+
+  /**
+   * 统计查询:
+   * select avg(age) avg_age, min(age) min_age, max(age) max_age
+   * from user
+   * group by manager_id
+   * having sum(age) < 500
+   */
+  @Test
+  public void select9Map() {
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.select("avg(age) avg_age", "min(age) min_age", "max(age) max_age")
+            .groupBy("manager_id")
+            .having("sum(age)<{0}", 500);
+    List<Map<String, Object>> maps = userMapper.selectMaps(queryWrapper);
+    maps.forEach(System.out::println);
+  }
+
+  @Test
+  public void select10Count() {
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.like("name", "雨").lt("age", 40);
+    Integer integer = userMapper.selectCount(queryWrapper);
+    System.out.print(integer);
+  }
+
+  @Test
+  public void select11One() {
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.like("name", "刘红雨").lt("age", 40);
+    User user = userMapper.selectOne(queryWrapper);
+    System.out.print(user);
+  }
+
+
+
 }
